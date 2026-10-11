@@ -1,0 +1,18 @@
+{
+  "eval_id": 1,
+  "eval_name": "review-shop-app",
+  "prompt": "hey can you review my flutter app in shop_app/ and tell me whats wrong with it? its a small shopping app using bloc",
+  "assertions": [
+    "Flags context/Navigator used after await without a mounted check in login_page.dart",
+    "Flags CartCubit.add mutating state.items and emitting the same instance (UI won't rebuild)",
+    "Flags the hard-coded DEMO_SECRET_KEY API key in main.dart as a security issue",
+    "Flags TextEditingControllers and/or AnimationController never disposed",
+    "Flags navigation (Navigator.pop) inside BlocBuilder builder \u2014 should be BlocListener",
+    "Flags FutureBuilder future created in build() (refetches every rebuild)",
+    "Flags BlocProvider.value used to create CartCubit (never closed)",
+    "Flags auth token stored in SharedPreferences instead of secure storage",
+    "Findings are grouped by severity (Critical/High/Medium/Low or equivalent)",
+    "Every finding includes a file path (and line) plus a concrete Dart fix",
+    "A report file was saved in the project root"
+  ]
+}

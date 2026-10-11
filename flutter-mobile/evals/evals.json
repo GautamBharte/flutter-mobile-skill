@@ -1,0 +1,65 @@
+{
+  "skill_name": "flutter-mobile",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "hey can you review my flutter app in shop_app/ and tell me whats wrong with it? its a small shopping app using bloc",
+      "expected_output": "Prioritized review report (FLUTTER_REVIEW.md) catching the planted bugs with file:line and Dart fixes",
+      "files": [
+        "fixtures/shop_app"
+      ],
+      "assertions": [
+        "Flags context/Navigator used after await without a mounted check in login_page.dart",
+        "Flags CartCubit.add mutating state.items and emitting the same instance (UI won't rebuild)",
+        "Flags the hard-coded DEMO_SECRET_KEY API key in main.dart as a security issue",
+        "Flags TextEditingControllers and/or AnimationController never disposed",
+        "Flags navigation (Navigator.pop) inside BlocBuilder builder \u2014 should be BlocListener",
+        "Flags FutureBuilder future created in build() (refetches every rebuild)",
+        "Flags BlocProvider.value used to create CartCubit (never closed)",
+        "Flags auth token stored in SharedPreferences instead of secure storage",
+        "Findings are grouped by severity (Critical/High/Medium/Low or equivalent)",
+        "Every finding includes a file path (and line) plus a concrete Dart fix",
+        "A report file was saved in the project root"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I want to publish shop_app to the Play Store and App Store next week. Is it ready? what do I need to fix before uploading",
+      "expected_output": "Release readiness report with verdict, catching Android/iOS config blockers",
+      "files": [
+        "fixtures/shop_app"
+      ],
+      "assertions": [
+        "Gives an explicit verdict that the app is NOT ready (or ready only after fixes)",
+        "Flags missing INTERNET permission in the main AndroidManifest (release builds have no network)",
+        "Flags release build signed with signingConfigs.debug",
+        "Flags applicationId / bundle ID com.example.* must change",
+        "Flags missing NSCameraUsageDescription in Info.plist although image_picker camera is used",
+        "Flags cleartext HTTP (http:// baseUrl, usesCleartextTraffic, NSAllowsArbitraryLoads)",
+        "Flags targetSdk 33 as below the current Play Store requirement",
+        "Mentions iOS privacy manifest (PrivacyInfo.xcprivacy)",
+        "Flags hard-coded live API key shipped in the binary",
+        "A report file was saved in the project root"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "add a product search screen to shop_app \u2014 user types in a search box and results come from GET $baseUrl/products?q=. use bloc like the rest of the app",
+      "expected_output": "Feature-folder search with Bloc + debounce/restartable, Equatable state, repository, loading/empty/error states, and bloc tests",
+      "files": [
+        "fixtures/shop_app"
+      ],
+      "assertions": [
+        "Creates a Bloc or Cubit for product search with a separate state class",
+        "Debounces search input (debounce transformer or Timer) to avoid a request per keystroke",
+        "Handles out-of-order/stale responses (restartable transformer or equivalent cancellation)",
+        "State uses value equality (Equatable/freezed/sealed with ==) and emits new instances",
+        "HTTP call lives in a repository/data class, not in the widget or directly in UI",
+        "UI handles loading, empty, error and success states",
+        "TextEditingController (if any) is disposed",
+        "Adds bloc tests (bloc_test or equivalent) for the search bloc/cubit",
+        "flutter analyze run on the new code with no errors (reported honestly)"
+      ]
+    }
+  ]
+}

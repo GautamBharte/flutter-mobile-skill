@@ -1,0 +1,17 @@
+{
+  "eval_id": 2,
+  "eval_name": "release-readiness",
+  "prompt": "I want to publish shop_app to the Play Store and App Store next week. Is it ready? what do I need to fix before uploading",
+  "assertions": [
+    "Gives an explicit verdict that the app is NOT ready (or ready only after fixes)",
+    "Flags missing INTERNET permission in the main AndroidManifest (release builds have no network)",
+    "Flags release build signed with signingConfigs.debug",
+    "Flags applicationId / bundle ID com.example.* must change",
+    "Flags missing NSCameraUsageDescription in Info.plist although image_picker camera is used",
+    "Flags cleartext HTTP (http:// baseUrl, usesCleartextTraffic, NSAllowsArbitraryLoads)",
+    "Flags targetSdk 33 as below the current Play Store requirement",
+    "Mentions iOS privacy manifest (PrivacyInfo.xcprivacy)",
+    "Flags hard-coded live API key shipped in the binary",
+    "A report file was saved in the project root"
+  ]
+}

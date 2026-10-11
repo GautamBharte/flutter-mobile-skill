@@ -1,0 +1,16 @@
+{
+  "eval_id": 3,
+  "eval_name": "add-search-feature",
+  "prompt": "add a product search screen to shop_app \u2014 user types in a search box and results come from GET $baseUrl/products?q=. use bloc like the rest of the app",
+  "assertions": [
+    "Creates a Bloc or Cubit for product search with a separate state class",
+    "Debounces search input (debounce transformer or Timer) to avoid a request per keystroke",
+    "Handles out-of-order/stale responses (restartable transformer or equivalent cancellation)",
+    "State uses value equality (Equatable/freezed/sealed with ==) and emits new instances",
+    "HTTP call lives in a repository/data class, not in the widget or directly in UI",
+    "UI handles loading, empty, error and success states",
+    "TextEditingController (if any) is disposed",
+    "Adds bloc tests (bloc_test or equivalent) for the search bloc/cubit",
+    "flutter analyze run on the new code with no errors (reported honestly)"
+  ]
+}
