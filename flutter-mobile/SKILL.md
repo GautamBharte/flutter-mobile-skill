@@ -1,6 +1,6 @@
 ---
 name: flutter-mobile
-description: Senior Flutter engineer for Android and iOS apps built with BLoC/Cubit. Use this skill whenever the user works on a Flutter or Dart mobile app — reviewing or auditing code, building a feature or screen, fixing a bug, checking Play Store / App Store release readiness (Gradle, Info.plist, permissions, signing, icons), or polishing UI and animations so the app feels native on both platforms. Trigger even if the user just says "review my app", "add a login screen", "is this ready to ship", "make it feel smoother", or pastes Dart/pubspec/AndroidManifest/Info.plist content without naming Flutter.
+description: Senior Flutter engineer for Android and iOS apps built with BLoC/Cubit. Use this skill whenever the user works on a Flutter or Dart mobile app — reviewing or auditing code, building a feature or screen, fixing a bug, checking Play Store / App Store release readiness (Gradle, Info.plist, permissions, signing, icons), reviewing UI/UX, animations, gestures and haptics so the app feels fast and native on both platforms, or stress-testing screens with worst-case data (long names, empty lists, 200% text, RTL). Trigger even if the user just says "review my app", "add a login screen", "is this ready to ship", "make it feel smoother", "the animation feels off", "try to break this screen", or pastes Dart/pubspec/AndroidManifest/Info.plist content without naming Flutter.
 ---
 
 # Flutter Mobile (Android + iOS, BLoC)
@@ -16,7 +16,10 @@ Figure out which of these the request is, then read the matching reference file 
 | **Review** | "review my app", "audit this code", "what's wrong with this screen" | `references/review.md` |
 | **Build** | "add a feature", "create a screen", "write a cubit for X", "fix this bug" | `references/build-bloc.md` |
 | **Release** | "ready for Play Store/App Store?", "release checklist", "build failing on iOS" | `references/release.md` |
-| **Polish** | "make it feel smoother", "improve animations", "looks off on iPhone" | `references/ui-polish.md` |
+| **UI/UX** | "review the UI/UX", "make it feel smoother", "improve animations", "this sheet feels off", "looks wrong on iPhone" | `references/ui-ux-review.md` → `references/motion.md` for every motion/gesture finding |
+| **Stress test** | "break this screen", "test edge cases", "what if the name is really long", "does it work at large text" | `references/stress-test.md` |
+
+A full app review usually covers Review + UI/UX; add Stress test for screens that render user data. `assets/motion_kit.dart` (curves, springs, `PressableScale`, `Appear`, drag helpers) is a tested drop-in for motion fixes — suggest copying it into the project instead of hand-writing the same helpers.
 
 ## First, understand the project (all modes)
 
@@ -38,10 +41,10 @@ Spend a minute orienting before judging or writing code — advice that ignores 
 
 ## Output format
 
-**Review / Release / Polish** → a prioritized report. Use this structure:
+**Review / Release / UI/UX** → a prioritized report (UI/UX findings go in Before | After | Why tables inside each severity section — see `ui-ux-review.md`; Stress test has its own format in `stress-test.md`). Use this structure:
 
 ```markdown
-# <App name> — <Review | Release Readiness | UI Polish> Report
+# <App name> — <Review | Release Readiness | UI/UX Review> Report
 
 ## Summary
 2–4 sentences: overall health, the single most important thing to fix, and a verdict
@@ -73,7 +76,7 @@ Rules that make the report useful:
 - Severity reflects user impact, not how ugly the code is. A missing `mounted` check after `await` that crashes is Critical/High; an unused import is Low.
 - Mark the platform when behaviour differs (iOS-only, Android-only).
 - Don't pad. Ten real findings beat thirty speculative ones. If unsure, say "Possible:" and explain what to verify.
-- Save the report as `FLUTTER_REVIEW.md` (or `RELEASE_READINESS.md` / `UI_POLISH.md`) in the project root unless the user asked for chat only, and give a short summary in chat.
+- Save the report as `FLUTTER_REVIEW.md` (or `RELEASE_READINESS.md` / `UI_UX_REVIEW.md` / `STRESS_TEST.md`) in the project root unless the user asked for chat only, and give a short summary in chat.
 
 **Build** → working code that follows `references/build-bloc.md`: the files, a short explanation of the structure, and tests for the bloc/cubit. Run `flutter analyze` and `flutter test` afterwards when possible and report the result honestly.
 

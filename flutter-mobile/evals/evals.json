@@ -60,6 +60,25 @@
         "Adds bloc tests (bloc_test or equivalent) for the search bloc/cubit",
         "flutter analyze run on the new code with no errors (reported honestly)"
       ]
+    },
+    {
+      "id": 4,
+      "prompt": "can you do a UI/UX review of shop_app? I want it to feel smooth and native like a real iOS/Android app \u2014 animations, buttons, everything. Also try to break the cart and login screens with nasty data",
+      "expected_output": "UI_UX_REVIEW.md with Before/After/Why tables by severity plus a stress-test report",
+      "files": [
+        "examples/shop_app"
+      ],
+      "assertions": [
+        "Flags the Opacity widget animated per frame in ProfilePage pulse (use FadeTransition) and/or questions the infinite pulse's purpose",
+        "Flags the GestureDetector login button: no pressed state, 36px height below 48dp, no semantics",
+        "Flags hard-coded Colors.black text breaking dark mode",
+        "Uses Before | After | Why tables for findings",
+        "Gives exact curve/duration/spring values from motion.md in motion findings",
+        "Mentions reduced motion (MediaQuery.disableAnimationsOf) for the pulse animation",
+        "Stress-tests cart/login with realistic worst-case data (long names/emails, 0/1/many items, large text scale)",
+        "Flags cart Column overflow with many items / not using ListView.builder",
+        "Flags price formatting (raw double, no NumberFormat currency)"
+      ]
     }
   ]
 }

@@ -53,6 +53,8 @@ Every one of these must be disposed/closed in `dispose()` (or the cubit's `close
 
 ## 7. Platform & accessibility (Medium)
 
+For anything about how the UI looks, moves, or feels, switch to `ui-ux-review.md` (and `motion.md`) rather than improvising — it has the exact standards and values.
+
 See the "Platform mindset" section in SKILL.md, plus:
 - Tap targets < 48×48 dp, icon buttons without `tooltip`/`Semantics`.
 - Text that overflows at large font scale or with long translations (fixed-height containers around `Text`).
