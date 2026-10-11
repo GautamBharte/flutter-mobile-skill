@@ -53,7 +53,9 @@ Three tasks on `examples/shop_app`, each run with the skill and without it (plai
 
 Notable: running the Flutter toolchain let the skill discover the sample app had **no `analysis_options.yaml`**, so `flutter analyze` reported "No issues" while hiding 12 lint warnings. That check is now built into the skill.
 
-Formal per-assertion grading is next (iteration 2).
+### Iteration 2 — UI/UX + stress test
+
+The skill reviewed `examples/shop_app` for UI/UX and stress-tested the cart and login screens ([`results/iteration-2/`](results/iteration-2)). It wrote `UI_UX_REVIEW.md`, `STRESS_TEST.md`, and a 97-case widget test (61 pass / 36 fail, every failure a real break). It caught the checkout crash (`Navigator.pop` inside `BlocBuilder`), the non-scrolling cart overflowing on a 375 pt phone, raw price formatting (`₹0.30000000000000004`), the 36 dp `GestureDetector` login button with no press state, and the `Opacity`-driven infinite pulse. Its feedback on the skill (keyboard insets lost in the test template, `pumpAndSettle` timeouts, test HTTP returning 400, seeding Bloc state) has been folded back into `stress-test.md`, `ui-ux-review.md`, and `flutter_scan.sh`.
 
 ## UI/UX standards — what's covered
 

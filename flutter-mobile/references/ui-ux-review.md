@@ -66,7 +66,7 @@ Tactical checks:
 
 ## Platform feel (iOS vs Android)
 
-- **Transitions:** set `pageTransitionsTheme` — `CupertinoPageTransitionsBuilder` on iOS (keeps edge swipe-back), `PredictiveBackPageTransitionsBuilder` or `FadeForwardsPageTransitionsBuilder` on Android. Custom `PageRouteBuilder`s often silently remove iOS swipe-back — flag it.
+- **Transitions:** the default `MaterialApp` already uses Cupertino transitions (with edge swipe-back) on iOS and the platform default on Android — that's correct; don't flag its absence. Flag custom `PageRouteBuilder`s or a `pageTransitionsTheme` that drops iOS swipe-back, and optionally suggest `PredictiveBackPageTransitionsBuilder` on Android for predictive back.
 - **Adaptive widgets:** `Switch.adaptive`, `Slider.adaptive`, `Checkbox.adaptive`, `CircularProgressIndicator.adaptive`, `RefreshIndicator.adaptive`, `AlertDialog.adaptive` + `showAdaptiveDialog`, `CupertinoActionSheet` vs `showModalBottomSheet`, `CupertinoContextMenu` for long-press previews on iOS.
 - **Scroll physics:** keep the platform default (bounce on iOS, stretch on Android). Forcing `BouncingScrollPhysics` everywhere makes Android feel foreign.
 - **Navigation chrome:** iOS large titles collapse on scroll (`CupertinoSliverNavigationBar` / `SliverAppBar.large`); Android uses Material 3 top app bars. Bottom navigation: `CupertinoTabBar` vs `NavigationBar`.
@@ -127,6 +127,11 @@ Severity for UI/UX findings: 🔴 **Critical** — broken or unusable (content c
 After the tables, add up to four **Missed opportunities** — places that don't animate or give feedback but should (a state change that teleports, a sheet that doesn't explain where it came from, a first-success moment with no delight). Keep it grounded in what you saw.
 
 For each motion finding, give exact values (curve, duration, spring) from `motion.md` and a compilable Dart snippet when the fix is more than a one-liner. Recommend a feel-check where needed: `timeDilation = 5.0` (slow motion), DevTools *Slow Animations*, profile-mode performance overlay, and a real device for gestures.
+
+### Reports and scope
+
+- UI/UX review + stress test in one request → two files: `UI_UX_REVIEW.md` and `STRESS_TEST.md`, each linking to the other; summarize both in chat.
+- Non-UI problems noticed along the way (security, leaks, architecture) go in a short **Outside UI/UX scope** section at the end of `UI_UX_REVIEW.md` — one line each with file:line — so they aren't lost but don't dilute the review. Offer a full code review for them.
 
 ### Plan mode (optional)
 

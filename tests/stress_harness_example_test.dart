@@ -1,47 +1,43 @@
 // Demonstrates the stress-test harness from references/stress-test.md:
-// "demo" passes, "worst" fails with a RenderFlex overflow (the intended bug).
+// "demo" passes; "worst" fails with RenderFlex overflows at 2x text and with the keyboard open.
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-class MemberListView extends StatelessWidget {
-  const MemberListView({super.key, required this.members});
-  final List<String> members;
+class Screen extends StatelessWidget {
+  const Screen({super.key, required this.items});
+  final List<String> items;
   @override
   Widget build(BuildContext context) => Scaffold(
-        body: ListView.builder(
-          itemCount: members.length,
-          itemBuilder: (_, i) => Row(children: [
-            const SizedBox(width: 40, height: 40),
-            Text(members[i]), // BUG: no Expanded
-            const Icon(Icons.more_horiz),
-          ]),
-        ),
+        body: Column(children: [for (final i in items) ListTile(title: Text(i))]),
       );
 }
 
 final fixtures = <(String, List<String>)>[
-  ('demo', ['Jane Doe']),
-  ('worst', ['bartholomew.fitzgerald@northwind-industries-holdings.example.com']),
+  ('demo', ['a']),
+  ('worst', List.generate(14, (i) => 'Item $i')),
 ];
+const sizes = [Size(375, 812)];
+const scales = [1.0, 2.0];
 
 void main() {
-  const sizes = [Size(320, 640)];
-  const scales = [1.0];
   for (final size in sizes) {
     for (final scale in scales) {
-      for (final (name, data) in fixtures) {
-        testWidgets('$name @ ${size.width.toInt()}w x$scale', (tester) async {
-          tester.view.physicalSize = size;
-          tester.view.devicePixelRatio = 1;
-          addTearDown(tester.view.reset);
-          await tester.pumpWidget(MaterialApp(
-            home: MediaQuery(
-              data: MediaQueryData(size: size, textScaler: TextScaler.linear(scale)),
-              child: MemberListView(members: data),
-            ),
-          ));
-          await tester.pumpAndSettle();
-        });
+      for (final keyboard in [false, true]) {
+        for (final (name, data) in fixtures) {
+          testWidgets('$name ${size.width.toInt()}w x$scale kb=$keyboard', (tester) async {
+            tester.view.physicalSize = size;
+            tester.view.devicePixelRatio = 1;
+            tester.platformDispatcher.textScaleFactorTestValue = scale;
+            if (keyboard) tester.view.viewInsets = const FakeViewPadding(bottom: 336);
+            addTearDown(tester.view.reset);
+            addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+            await tester.pumpWidget(MaterialApp(home: Screen(items: data)));
+            await tester.pump(const Duration(milliseconds: 500));
+            final mq = MediaQuery.of(tester.element(find.byType(Screen)));
+            expect(mq.textScaler.scale(10), closeTo(10 * scale, 0.01));
+            expect(mq.viewInsets.bottom, keyboard ? 336 : 0);
+          });
+        }
       }
     }
   }

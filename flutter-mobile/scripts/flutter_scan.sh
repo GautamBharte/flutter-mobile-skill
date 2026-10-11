@@ -21,7 +21,7 @@ hits '(DEMO_SECRET_KEY|AIza[0-9A-Za-z_-]{20,}|ghp_[0-9A-Za-z]{20,})'
 section "Cleartext http:// URLs"
 hits '["'"'"']http://[^l"'"'"']'
 
-section "Files that use context after await (check for context.mounted / mounted)"
+section "Files with await + navigation/dialogs and no mounted check (verify: context after await, or navigation inside build)"
 grep -rlE --include='*.dart' 'await ' "$LIB" | while IFS= read -r f; do
   if grep -qE '(Navigator\.|ScaffoldMessenger\.|showDialog|showModalBottomSheet|context\.(go|push|pop))' "$f" \
      && ! grep -qE '(context\.mounted|!mounted|if \(mounted)' "$f"; then
@@ -43,6 +43,10 @@ hits 'future:\s*_?[A-Za-z_.]+\([^)]*\)\s*,'
 
 section "BlocProvider.value with create-like constructor (leak)"
 hits 'value:\s*[A-Z][A-Za-z]*(Bloc|Cubit)\('
+
+section "Navigation/dialogs possibly inside a builder (side effects belong in BlocListener)"
+hits 'builder:.*(Navigator\.|showDialog|ScaffoldMessenger)'
+grep -rnE --include='*.dart' -A6 'BlocBuilder<' "$LIB" 2>/dev/null | grep -E '(Navigator\.|showDialog|ScaffoldMessenger)' | head -n 20
 
 section "Mutating state collections before emit"
 hits 'state\.[A-Za-z_]+\.(add|remove|insert|clear|sort)\('

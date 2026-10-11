@@ -46,26 +46,43 @@ const scales = [1.0, 1.3, 2.0];
 
 for (final size in sizes) {
   for (final scale in scales) {
-    for (final (name, data) in fixtures) { // demo, worst, empty, one, huge
-      testWidgets('$name @ ${size.width.toInt()}w x$scale', (tester) async {
-        tester.view.physicalSize = size;
-        tester.view.devicePixelRatio = 1;
-        addTearDown(tester.view.reset);
-        await tester.pumpWidget(MaterialApp(
-          home: MediaQuery(
-            data: MediaQueryData(size: size, textScaler: TextScaler.linear(scale)),
-            child: MemberListView(members: data),
-          ),
-        ));
-        await tester.pumpAndSettle();
-        // Overflow / layout errors fail the test automatically.
-      });
+    for (final keyboard in [false, true]) {
+      for (final (name, state) in fixtures) { // demo, worst, empty, one, huge
+        testWidgets('$name ${size.width.toInt()}w x$scale kb=$keyboard', (tester) async {
+          // Drive the test view instead of wrapping in a new MediaQueryData,
+          // so text scale and keyboard insets reach the real MediaQuery.
+          tester.view.physicalSize = size;
+          tester.view.devicePixelRatio = 1;
+          tester.platformDispatcher.textScaleFactorTestValue = scale;
+          if (keyboard) tester.view.viewInsets = const FakeViewPadding(bottom: 336);
+          addTearDown(tester.view.reset);
+          addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+
+          await tester.pumpWidget(MaterialApp(
+            home: BlocProvider<CartCubit>(
+              create: (_) => _SeededCartCubit(state), // seed state directly, see below
+              child: const CartView(),
+            ),
+          ));
+          // Not pumpAndSettle: it times out on spinners and repeating animations.
+          await tester.pump(const Duration(milliseconds: 500));
+          // Layout errors (RenderFlex overflow) fail the test automatically.
+          // Add expectations users would have, e.g. the primary action is reachable:
+          // expect(tester.getRect(find.text('Checkout')).bottom, lessThanOrEqualTo(size.height));
+        });
+      }
     }
   }
 }
 ```
 
-Add `Directionality(textDirection: TextDirection.rtl, …)` and a dark `ThemeData` variant if the app supports them. Golden tests (`matchesGoldenFile`) capture the visual result for review.
+Harness rules (each one bit a real run):
+- **Never hit the network.** `flutter_test` answers every real HTTP request with status 400, so screens that fetch in `initState`/`build` show their error path. Inject fake repositories (or a `MockClient` from `package:http/testing.dart`) that return the fixture.
+- **Seed state directly, not through the app's own mutation methods.** Emit the fixture as the cubit's initial state (a small test subclass or `MockCubit` + `whenListen`). Seeding via `add()` can hide bugs like "mutating state and emitting the same instance" — Bloc lets the very first emit through, so the screen looks fine in the test and broken in the app.
+- **Use `pump(duration)`, not `pumpAndSettle()`,** on screens with spinners, shimmer, or repeating animations, otherwise the test times out instead of reporting the layout.
+- **What to assert:** overflow/layout errors are caught for free; add a few behaviour expectations a user would have (primary button visible and tappable, text not cut off, empty state shown for 0 items). Report each failure as a break.
+
+Add `Directionality(textDirection: TextDirection.rtl, …)` (or `locale: Locale('ar')` with localization delegates) and a dark `ThemeData` variant if the app supports them. Golden tests (`matchesGoldenFile`) capture the visual result for review.
 
 ## Phase 4 — Break it
 
